@@ -1,0 +1,44 @@
+body {
+  font-family: "Arial", sans-serif;
+  padding: 10px;
+  width: 300px;
+  margin: 0;
+}
+
+h1 {
+  color: #333;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+button {
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+button:hover {
+  background-color: #357ae8;
+  transition: background-color 0.3s;
+}
+
+#cookie-list {
+  margin-top: 10px;
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+}
+
+.cookie-item {
+  background-color: #f9f9f9;
+  padding: 5px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+  word-break: break-all;
+}

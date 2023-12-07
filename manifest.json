@@ -1,14 +1,16 @@
 {
   "manifest_version": 3,
-  "name": "Cookie Fetcher for Firestore",
+  "name": "Cookie Fetcher for FEM",
   "version": "1.0",
+  "description": "A Chrome extension for fetching and applying cookies in FEM by Junior Developer | Muhammad Hany.",
+  "author": "Junior Developer | Muhammad Hany ",
   "permissions": ["cookies", "storage", "identity"],
-  "host_permissions": ["*://*.frontendmasters.com/"],
+  "host_permissions": [
+    "*://*.frontendmasters.com/",
+    "*://dash.cloudflare.com/*"
+  ],
   "background": {
     "service_worker": "background.js"
-  },
-  "sandbox": {
-    "pages": ["sandbox.html"]
   },
   "action": {
     "default_popup": "popup/popup.html"

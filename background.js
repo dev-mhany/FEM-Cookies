@@ -1,205 +1,128 @@
-console.log("Background script loaded");
+console.log("Background script loading");
+function saveCookieToCloudflareKV(cookieValue) {
+  console.log("Saving cookie to Cloudflare KV:", cookieValue);
 
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyDqpoZOG_0NsEyR6kptHCO176RwNkIV6Co",
-  authDomain: "fem-cookies.firebaseapp.com",
-  projectId: "fem-cookies",
-  storageBucket: "fem-cookies.appspot.com",
-  messagingSenderId: "644451757006",
-  appId: "1:644451757006:web:04f1dcfd387a4af995199f",
-  measurementId: "G-VMVTXBH608",
-};
+  // Replace with your actual Cloudflare account ID and KV namespace ID
+  const accountID = "f178d4c8c43acc247a04c9ea94017495";
+  const namespaceID = "d369ef77b8244755b3ef47bde27c1627";
+  const key = "FEM"; // The key under which you want to store the cookie value
 
-// Background Script for Chrome Extension
+  const url = `https://api.cloudflare.com/client/v4/accounts/${accountID}/storage/kv/namespaces/${namespaceID}/values/${key}`;
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: "Bearer jhWqCzupouL4o1VmjWWZtNN-lTSJVPkIVlO-4qO2", // Replace YOUR_API_TOKEN with your actual API token
+  };
 
-// Initialize Firebase (Uncomment if Firebase is needed)
-// firebase.initializeApp(firebaseConfig);
-// const db = firebase.firestore();
-
-// Utility Functionsfunction getUserId(callback) {
-// chrome.identity.getProfileUserInfo({ accountStatus: "ANY" }, (userInfo) => {
-//   if (chrome.runtime.lastError) {
-//     console.error(
-//       "Error retrieving user info:",
-//       chrome.runtime.lastError.message
-//     );
-//     callback(null);
-//   } else {
-//     callback(userInfo.id);
-//   }
-// });
-
-function fetchCookieFromFirestore(userId, callback) {
-  const cookiesRef = db.collection("cookies").doc("latest");
-  cookiesRef
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        callback({ cookies: doc.data().cookies || [] });
-      } else {
-        callback({ error: "No cookies found" });
+  fetch(url, {
+    method: "PUT",
+    headers: headers,
+    body: cookieValue,
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      console.log("Response received from Cloudflare KV:", response);
+      return response.text();
+    })
+    .then((data) => {
+      console.log("Cookie value saved to Cloudflare KV:", data);
     })
     .catch((error) => {
-      console.error("Error fetching cookies:", error);
-      callback({ error: error.message });
+      console.error("Error saving cookie value to Cloudflare KV:", error);
     });
 }
+function applyCookiesFromCloudFlare(sendResponse) {
+  // Replace with your actual Cloudflare account ID and KV namespace ID
+  const accountID = "f178d4c8c43acc247a04c9ea94017495";
+  const namespaceID = "d369ef77b8244755b3ef47bde27c1627";
+  const key = "FEM"; // The key for which you want to retrieve the cookie value
 
-function applyFirestoreCookie(userId) {
-  const cookiesRef = db.collection("cookies").doc(latest);
-  cookiesRef
-    .get()
-    .then((doc) => {
-      if (doc.exists) {
-        const cookieData = doc.data();
-        chrome.cookies.set(
-          {
-            url: "https://www.frontendmasters.com/",
-            name: cookieData.name,
-            value: cookieData.value,
-            // Other cookie properties...
-          },
-          (cookie) => {
-            if (chrome.runtime.lastError) {
-              console.error("Error setting cookie:", chrome.runtime.lastError);
-            } else {
-              console.log("Cookie set successfully:", cookie);
-            }
-          }
-        );
-      } else {
-        console.log("No cookie found in Firestore for the user:", userId);
+  const url = `https://api.cloudflare.com/client/v4/accounts/${accountID}/storage/kv/namespaces/${namespaceID}/values/${key}`;
+  const headers = {
+    Authorization: "Bearer jhWqCzupouL4o1VmjWWZtNN-lTSJVPkIVlO-4qO2", // Replace YOUR_API_TOKEN with your actual API token
+  };
+
+  fetch(url, {
+    method: "GET",
+    headers: headers,
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      return response.json(); // Corrected this line to parse the response body as JSON
     })
-    .catch((error) => {
-      console.error("Error applying cookie:", error);
-    });
-}
-
-function saveCookieToFirestore(cookie, userId) {
-  const cookiesRef = db.collection("cookies");
-  const expirationTimestamp = firebase.firestore.Timestamp.fromDate(
-    new Date(cookie.expirationDate)
-  );
-  cookiesRef
-    .doc(latest)
-    .set({
-      value: cookie.value,
-      domain: cookie.domain,
-      path: cookie.path,
-      expirationDate: expirationTimestamp,
-      secure: cookie.secure,
-      httpOnly: cookie.httpOnly,
-      // ... any other properties you want to save
-    })
-    .then(() => {
-      console.log("Cookie saved to Firestore");
-    })
-    .catch((error) => {
-      console.error("Error writing cookie to Firestore:", error);
-    });
-}
-
-// Event Listeners
-chrome.cookies.onChanged.addListener((changeInfo) => {
-  if (
-    !changeInfo.removed &&
-    changeInfo.cookie.domain.includes("frontendmasters.com")
-  ) {
-    if (changeInfo.cookie.name === "fem_auth_mod") {
-      getUserId((userId) => {
-        if (userId) {
-          saveCookieToFirestore(changeInfo.cookie, userId);
-        }
-      });
-    }
-  }
-});
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  switch (message.action) {
-    case "fetchCookieFromFirestore":
-      getUserId((userId) => {
-        if (userId) {
-          fetchCookieFromFirestore(userId, sendResponse);
-        } else {
-          sendResponse({ error: "User ID not found." });
-        }
-      });
-      return true; // Indicate asynchronous response
-
-    case "applyFirestoreCookie":
-      getUserId((userId) => {
-        if (userId) {
-          applyFirestoreCookie(userId, sendResponse);
-        } else {
-          sendResponse({ error: "User ID not found." });
-        }
-      });
-      return true; // Indicate asynchronous response
-
-    case "getCookiesFromFirestore":
-      db.collection("cookies")
-        .doc("latest")
-        .get()
-        .then((doc) => {
-          if (!doc.exists) {
-            sendResponse({ error: "No cookies document found in Firestore." });
+    .then((cookieDetails) => {
+      // The response is now correctly parsed as a JSON object, so you can use it directly
+      chrome.cookies.set(
+        {
+          url: `https://www.frontendmasters.com`,
+          name: cookieDetails.name,
+          value: cookieDetails.value,
+          domain: cookieDetails.domain,
+          path: cookieDetails.path,
+          secure: cookieDetails.secure,
+          httpOnly: cookieDetails.httpOnly,
+          expirationDate: cookieDetails.expirationDate,
+          sameSite:
+            cookieDetails.sameSite === "unspecified"
+              ? "no_restriction"
+              : cookieDetails.sameSite,
+        },
+        function (cookie) {
+          if (chrome.runtime.lastError) {
+            console.error("Error setting cookie:", chrome.runtime.lastError);
+            sendResponse({
+              success: false,
+              error: chrome.runtime.lastError.message,
+            });
             return;
           }
-          // Retrieve all fields as cookies
-          const cookiesData = doc.data();
-          const cookies = Object.keys(cookiesData).map((key) => ({
-            name: key,
-            value: cookiesData[key],
-          }));
-          sendResponse({ cookies: cookies });
-        })
-        .catch((error) => {
-          console.error("Error getting cookies from Firestore:", error);
-          sendResponse({ error: error.message });
-        });
-      return true; // Indicate asynchronous response
-
-    case "saveCookieToFirestore":
-      getUserId((userId) => {
-        if (userId) {
-          saveCookieToFirestore(message.cookie, userId);
-          sendResponse({ status: "success" });
-        } else {
-          sendResponse({ status: "error", error: "User ID not found." });
+          console.log("Cookie set successfully:", cookie);
+          sendResponse({ success: true });
         }
-      });
-      return true; // Indicate asynchronous response
+      );
+    })
+    .catch((error) => {
+      console.error("Error retrieving or setting cookie:", error);
+      sendResponse({ success: false, error: error.message });
+    });
 
+  return true; // This should be the last line in the function to keep the message channel open
+}
+// Handles messages received by the extension
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log("Message received:", message);
+
+  switch (message.action) {
     case "getCookie":
+      console.log(`Fetching cookie with name: ${message.name}`);
       chrome.cookies.get(
-        {
-          url: "https://www.frontendmasters.com/",
-          name: message.name,
-        },
+        { url: "https://www.frontendmasters.com/", name: message.name },
         (cookie) => {
           if (cookie) {
-            sendResponse({ cookie: cookie });
+            console.log("Cookie found:", cookie);
+            sendResponse({ cookie });
+            saveCookieToCloudflareKV(JSON.stringify(cookie));
           } else {
+            console.log("Cookie not found");
             sendResponse({ error: "Cookie not found" });
           }
         }
       );
-      return true; // Indicate asynchronous response
+      break;
+    case "applyCookiesFromCloudFlare":
+      applyCookiesFromCloudFlare(sendResponse);
+      break;
 
     default:
+      console.log("Unknown action received:", message.action);
       sendResponse({ error: "Unknown action" });
-      return false; // No asynchronous response expected
+      break;
   }
-});
 
-// chrome.runtime.onInstalled.addListener(() => {
-//   getUserId((userId) => {
-//     if (userId) applyFirestoreCookie(userId);
-//   });
-// });
+  return true; // Indicates an asynchronous response is expected
+});
 
 console.log("Background script loaded");

@@ -42,3 +42,6 @@ button:hover {
   border-radius: 4px;
   word-break: break-all;
 }
+#cookie-list {
+  height: fit-content;
+}

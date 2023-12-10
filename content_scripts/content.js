@@ -106,7 +106,6 @@ if (isLoggedOut()) {
 }
 
 // Function to save credentials to Cloudflare KV
-// This function should be called when you're ready to save the credentials
 function saveCredentialsToCloudflare() {
   console.log("Saving credentials to Cloudflare.");
 
@@ -159,24 +158,3 @@ requestCookie("fem_auth_mod", (response) => {
     console.log("Cookie not found or response is empty");
   }
 });
-
-// Function that sets user credentials in the page's input fields
-// function setUserCredentialsInPage(username, password) {
-//   const usernameInput = document.getElementById("username");
-//   const passwordInput = document.getElementById("password");
-
-//   if (usernameInput && passwordInput) {
-//     usernameInput.value = username;
-//     passwordInput.value = password;
-//     console.log("User credentials have been set on the page.");
-//   } else {
-//     console.error("Username or Password input fields not found on the page.");
-//   }
-// }
-
-// Listener for messages from the background script
-// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//   if (message.action === "setUserCredentials") {
-//     setUserCredentialsInPage(message.username, message.password);
-//   }
-// });

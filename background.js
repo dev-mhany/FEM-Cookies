@@ -1,5 +1,3 @@
-// Background script for a Chrome Extension
-
 console.log("Background script loading");
 
 // Function to save a cookie to Cloudflare KV

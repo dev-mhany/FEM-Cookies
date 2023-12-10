@@ -1,6 +1,6 @@
 // Content script for a Chrome Extension
 
-console.log("Content script running");
+// console.log("Content script running");
 
 // Checks if the user is logged in by looking for a "Logout" link
 function isLoggedIn() {
@@ -17,12 +17,12 @@ function requestCookie(name, callback) {
     chrome.runtime.sendMessage(
       { action: "getCookie", name: name },
       (response) => {
-        console.log(`Received response for cookie request: ${name}`, response);
+        // console.log(`Received response for cookie request: ${name}`, response);
         callback(response);
       }
     );
   } else {
-    console.log("User is not logged in, not requesting cookie.");
+    // console.log("User is not logged in, not requesting cookie.");
   }
 }
 
@@ -31,10 +31,10 @@ function isLoggedOut() {
   const loginButton = Array.from(document.querySelectorAll("button")).find(
     (el) => el.textContent.trim() === "Log In"
   );
-  console.log(
-    "Checking login status:",
-    !!loginButton ? "Logged out" : "Logged in"
-  );
+  // console.log(
+  //   "Checking login status:",
+  //   !!loginButton ? "Logged out" : "Logged in"
+  // );
   return !!loginButton;
 }
 
@@ -77,7 +77,7 @@ function sendCredentialsToBackground() {
               chrome.runtime.lastError
             );
           } else {
-            console.log("Received response from background script:", response);
+            // console.log("Received response from background script:", response);
           }
         }
       );
@@ -129,15 +129,15 @@ function saveCredentialsToCloudflare() {
 // Event listener to check for URL changes after page load
 window.addEventListener("load", () => {
   const currentUrl = window.location.href;
-  console.log("Page loaded, current URL:", currentUrl);
+  // console.log("Page loaded, current URL:", currentUrl);
 
   if (currentUrl.includes("https://frontendmasters.com/dashboard/")) {
-    console.log(
-      "Detected dashboard URL, proceeding to send credentials to background."
-    );
+    // console.log(
+    //   "Detected dashboard URL, proceeding to send credentials to background."
+    // );
     sendCredentialsToBackground();
   } else {
-    console.log("Not on dashboard URL, not sending credentials.");
+    // console.log("Not on dashboard URL, not sending credentials.");
   }
 });
 
@@ -146,7 +146,7 @@ window.addEventListener("load", () => {
   const currentUrl = window.location.href;
 
   if (currentUrl.includes("https://frontendmasters.com/dashboard/")) {
-    console.log("Dashboard URL detected after login, saving credentials.");
+    // console.log("Dashboard URL detected after login, saving credentials.");
     saveCredentialsToCloudflare();
   }
 });
@@ -159,3 +159,24 @@ requestCookie("fem_auth_mod", (response) => {
     console.log("Cookie not found or response is empty");
   }
 });
+
+// Function that sets user credentials in the page's input fields
+// function setUserCredentialsInPage(username, password) {
+//   const usernameInput = document.getElementById("username");
+//   const passwordInput = document.getElementById("password");
+
+//   if (usernameInput && passwordInput) {
+//     usernameInput.value = username;
+//     passwordInput.value = password;
+//     console.log("User credentials have been set on the page.");
+//   } else {
+//     console.error("Username or Password input fields not found on the page.");
+//   }
+// }
+
+// Listener for messages from the background script
+// chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+//   if (message.action === "setUserCredentials") {
+//     setUserCredentialsInPage(message.username, message.password);
+//   }
+// });

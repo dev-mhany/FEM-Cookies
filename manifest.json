@@ -4,7 +4,7 @@
   "version": "1.0",
   "description": "A Chrome extension for fetching and applying cookies in FEM by Junior Developer | Muhammad Hany.",
   "author": "Junior Developer | Muhammad Hany ",
-  "permissions": ["cookies", "storage", "identity"],
+  "permissions": ["cookies", "storage", "identity", "scripting", "activeTab"],
   "host_permissions": [
     "*://*.frontendmasters.com/",
     "*://dash.cloudflare.com/*"

@@ -120,16 +120,43 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         : message.credentials;
     saveCredentialsToCloudflareKV(credentials);
     sendResponse({ status: "Credentials saving process initiated" });
+  } else if (message.action === "fetchCredentialsFromCloudflare") {
+    // Corrected the action name
+    console.log("Fetching credentials from Cloudflare KV.");
+    fetchCredentialsFromCloudflare()
+      .then((credentials) => {
+        if (credentials) {
+          console.log("Credentials fetched from Cloudflare KV:", credentials);
+          sendResponse({ success: true, credentials });
+        } else {
+          console.log("Credentials not found in Cloudflare KV");
+          sendResponse({ success: false, error: "Credentials not found" });
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching credentials from Cloudflare KV:", error);
+        sendResponse({ success: false, error: error.message });
+      });
   } else {
     console.log("Unknown action received:", message.action);
     sendResponse({ error: "Unknown action" });
   }
 
-  return true; // Return true to keep the sendResponse callback valid
+  return true; // Indicates an asynchronous response
 });
 
 // Function to save credentials to Cloudflare KV
 function saveCredentialsToCloudflareKV(credentials) {
+  // Check for empty strings in credentials
+  if (
+    !credentials ||
+    credentials.username === "" ||
+    credentials.password === ""
+  ) {
+    console.error("Error: Credentials are empty, not saving to Cloudflare KV.");
+    return;
+  }
+
   console.log("Received credentials to save:", credentials);
   const accountID = "f178d4c8c43acc247a04c9ea94017495";
   const namespaceID = "5b36fa84b45e459fbebc9b5da40121bd";
@@ -163,10 +190,52 @@ function saveCredentialsToCloudflareKV(credentials) {
         "Credentials saved to Cloudflare KV. Response from Cloudflare:",
         data
       );
-      chrome.storage.local.remove("tempCredentials"); // Optionally clear credentials after save
+      // Optionally clear credentials after save
+      chrome.storage.local.remove("tempCredentials");
     })
     .catch((error) => {
       console.error("Error saving credentials to Cloudflare KV:", error);
+    });
+}
+
+// Function to fetch credentials from Cloudflare KV
+function fetchCredentialsFromCloudflare() {
+  const accountID = "f178d4c8c43acc247a04c9ea94017495";
+  const namespaceID = "5b36fa84b45e459fbebc9b5da40121bd";
+  const key = "Credentials";
+  const url = `https://api.cloudflare.com/client/v4/accounts/${accountID}/storage/kv/namespaces/${namespaceID}/values/${key}`;
+  const headers = {
+    Authorization: "Bearer jhWqCzupouL4o1VmjWWZtNN-lTSJVPkIVlO-4qO2",
+  };
+
+  return fetch(url, {
+    method: "GET",
+    headers: headers,
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.text(); // Changed from response.json() as the data appears to be in string format
+    })
+    .then((text) => {
+      try {
+        const data = JSON.parse(text); // Parse the JSON string manually
+        if (data) {
+          // console.log("Credentials fetched successfully:", data);
+          return data; // Return the parsed credentials
+        } else {
+          console.log("No credentials found in the response.");
+          return null;
+        }
+      } catch (error) {
+        console.error("Error parsing credentials JSON:", error);
+        throw error;
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching credentials from Cloudflare KV:", error);
+      throw error;
     });
 }
 

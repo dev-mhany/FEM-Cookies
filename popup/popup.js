@@ -5,6 +5,38 @@ document.addEventListener("DOMContentLoaded", () => {
   const cookieListDiv = document.getElementById("cookie-list");
   const fetchCredentialsButton = document.getElementById("fetch-credentials");
   const credentialsStatusDiv = document.getElementById("credentials-status");
+  const passwordSection = document.getElementById("password-section");
+  const passwordInput = document.getElementById("password-input");
+  const submitPasswordButton = document.getElementById("submit-password");
+  const passwordErrorDiv = document.getElementById("password-error");
+
+  function showButtons() {
+    passwordSection.style.display = "none";
+    showCookiesButton.style.display = "block";
+    fetchCredentialsButton.style.display = "block";
+  }
+
+  function checkPassword() {
+    const hardcodedPassword = "HelloWorld";
+    if (passwordInput.value === hardcodedPassword) {
+      chrome.storage.local.set({ authenticated: true }, () => {
+        showButtons();
+      });
+    } else {
+      passwordErrorDiv.textContent = "Incorrect password.";
+    }
+  }
+
+  // Check if the user is already authenticated
+  chrome.storage.local.get(["authenticated"], function (result) {
+    if (result.authenticated) {
+      showButtons();
+    }
+  });
+
+  submitPasswordButton.addEventListener("click", () => {
+    checkPassword();
+  });
 
   // Event Listener for Showing Cookies
   showCookiesButton.addEventListener("click", () => {
@@ -50,7 +82,6 @@ function setCredentialsInActiveTab(credentials) {
         args: [credentials.username, credentials.password],
       },
       (results) => {
-        // Handle any results or errors from the injected script here
         if (chrome.runtime.lastError || results[0].result === false) {
           console.error("Error injecting script", chrome.runtime.lastError);
         }

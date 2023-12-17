@@ -7,10 +7,18 @@
   </head>
   <body>
     <h1>FEM Cookies</h1>
-    <button id="show-cookies">Apply FEM Cookies from CloudFlare</button>
-    <button id="fetch-credentials">
+    <div id="password-section">
+      <input type="password" id="password-input" placeholder="Enter Password" />
+      <button id="submit-password">Submit Password</button>
+      <div id="password-error"></div>
+    </div>
+    <button id="show-cookies" style="display: none">
+      Apply FEM Cookies from CloudFlare
+    </button>
+    <button id="fetch-credentials" style="display: none">
       Fetch FEM Credentials from CloudFlare
     </button>
+
     <div id="credentials-status"></div>
     <div id="cookie-list"></div>
     <script src="popup.js"></script>

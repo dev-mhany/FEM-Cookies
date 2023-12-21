@@ -17,8 +17,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function checkPassword() {
-    const hardcodedPassword = "HelloWorld";
-    if (passwordInput.value === hardcodedPassword) {
+    const encodedHardcodedPassword = "SGVsbG9Xb3JsZA==";
+    const decodedHardcodedPassword = atob(encodedHardcodedPassword);
+
+    if (passwordInput.value === decodedHardcodedPassword) {
       chrome.storage.local.set({ authenticated: true }, () => {
         showButtons();
       });

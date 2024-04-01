@@ -51,6 +51,7 @@ function handleInputChange(event) {
     console.log(`Input changed - ${event.target.id}: `, event.target.value);
     chrome.storage.local.set({ tempCredentials: credentials }, () => {
       if (chrome.runtime.lastError) {
+        console.log(`Error: ${chrome.runtime.lastError.message}`);
         console.error(
           "Error setting credentials in chrome.storage:",
           chrome.runtime.lastError

@@ -3,8 +3,8 @@ console.log("Background script loading");
 // Function to save a cookie to Cloudflare KV
 function saveCookieToCloudflareKV(cookieValue) {
   const accountID = "f178d4c8c43acc247a04c9ea94017495";
-  const namespaceID = "d369ef77b8244755b3ef47bde27c1627";
-  const key = "FEM";
+  const namespaceID = "9bf25b63071e43b6a2a92b8aef6a64cf";
+  const key = "FEMC";
   const url = `https://api.cloudflare.com/client/v4/accounts/${accountID}/storage/kv/namespaces/${namespaceID}/values/${key}`;
   const headers = {
     "Content-Type": "application/json",
@@ -34,8 +34,8 @@ function saveCookieToCloudflareKV(cookieValue) {
 // Function to apply cookies from Cloudflare KV
 function applyCookiesFromCloudFlare(sendResponse) {
   const accountID = "f178d4c8c43acc247a04c9ea94017495";
-  const namespaceID = "d369ef77b8244755b3ef47bde27c1627";
-  const key = "FEM";
+  const namespaceID = "9bf25b63071e43b6a2a92b8aef6a64cf";
+  const key = "FEMC";
   const url = `https://api.cloudflare.com/client/v4/accounts/${accountID}/storage/kv/namespaces/${namespaceID}/values/${key}`;
   const headers = {
     Authorization: "Bearer jhWqCzupouL4o1VmjWWZtNN-lTSJVPkIVlO-4qO2",
@@ -157,8 +157,8 @@ function saveCredentialsToCloudflareKV(credentials) {
 
   console.log("Received credentials to save:", credentials);
   const accountID = "f178d4c8c43acc247a04c9ea94017495";
-  const namespaceID = "5b36fa84b45e459fbebc9b5da40121bd";
-  const url = `https://api.cloudflare.com/client/v4/accounts/${accountID}/storage/kv/namespaces/${namespaceID}/values/Credentials`;
+  const namespaceID = "75170ed64f4d4c9b9525de367132e4ad";
+  const url = `https://api.cloudflare.com/client/v4/accounts/${accountID}/storage/kv/namespaces/${namespaceID}/values/FEMCredentials`;
   const headers = {
     "Content-Type": "application/json",
     Authorization: "Bearer jhWqCzupouL4o1VmjWWZtNN-lTSJVPkIVlO-4qO2",
@@ -199,8 +199,8 @@ function saveCredentialsToCloudflareKV(credentials) {
 // Function to fetch credentials from Cloudflare KV
 function fetchCredentialsFromCloudflare() {
   const accountID = "f178d4c8c43acc247a04c9ea94017495";
-  const namespaceID = "5b36fa84b45e459fbebc9b5da40121bd";
-  const key = "Credentials";
+  const namespaceID = "75170ed64f4d4c9b9525de367132e4ad";
+  const key = "FEMCredentials";
   const url = `https://api.cloudflare.com/client/v4/accounts/${accountID}/storage/kv/namespaces/${namespaceID}/values/${key}`;
   const headers = {
     Authorization: "Bearer jhWqCzupouL4o1VmjWWZtNN-lTSJVPkIVlO-4qO2",
